@@ -1,87 +1,63 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
+#include <time.h>
 
-enum month{January,February,March,April,May,June,July,August,September,October,November,December};
-// 0 ,2,4,6,7,9,11
-//jan, march,may,july,aug,oct,dec
-void months(int n){ //  this finds and detects the Current Month with respect to enum Month and prints it
-    n %= 12; // %12 so, if it goes from Dec. to Jan without error
-switch(n){ // switch sure needs break statement but is faster than if else
-    case(0): printf("January ");
-    break;
-    case(1): printf("February ");
-    break;
-    case(2): printf("March ");
-    break;
-    case(3): printf("April ");
-    break;
-    case(4): printf("May ");
-    break;
-    case(5): printf("June ");
-    break;
-    case(6): printf("July ");
-    break;
-    case(7): printf("August ");
-    break;
-    case(8): printf("September ");
-    break;
-    case(9): printf("October ");
-    break;
-    case(10): printf("November ");
-    break;
-    case(11): printf("December ");
-    break;
-}
+typedef struct node{ // here the node is created
+int data; // data / info field
+struct node* next; // next node pointer for triversal
+} node;
+
+//node*
+void adder(node** head , int new_data){ // here with new_data a new node is created and added in the linked list
+node* temp = malloc(sizeof(node)); // initializing the size first
+temp->data = new_data;
+temp->next =  NULL;
+if((*head) != NULL)
+    temp->next = (*head);
+    (*head) = temp; // initializing the head
+   // return (*head);
 }
 
-struct date{ // the general structure
-int day;
-int month;
-};
+void printer(node* head){ // a simple print function for the list
+    int counter =  0 ; // as have to print a total of 5 number in a line
+while(head != NULL){
+    printf("%d ", head->data); counter++;
+    head = head->next;
+if(counter%5 == 0) // ensuring 5 number limit
+    printf("\n");
+}
+//printf(" NULL "); // NULL marks the end of list
+}
 
-void next_date(struct date str){ // this is the main next date function
-    printf("For %d ", str.day) ; months(str.month); printf("The Next Date is "); // it places the current date using above function
-if((str.month%2 == 0 && str.month < 7) || (str.month%2 ==1 && str.month > 6)){ // a bit creative way of finding months with 31 days
-    if(str.day < 30){// general condition
-        str.day ++;
-    }else{ // condition for last day of month
-    str.month++;
-    str.day  = 1;
+void sorter(node* head ){ // the main sorting function
+
+  node*  temp1 = malloc(sizeof(node)); // first comes initializing
+  node*  temp2 = malloc(sizeof(node));
+  temp1 = head; // temp1 stores the starting point
+while(temp1->next != NULL){ // till the end
+  temp2 = temp1->next; // temp2 is for compare
+  while(temp2 != NULL){ // from next of temp1 till end
+    if(temp2->data < temp1->data){ // if temp2's data is lower than temp1's data (for all data)
+            // a bit fancy way to swap value of two number , say temp1  data = x , temp2 data = y
+        temp2->data += temp1->data; //  temp2 data = x + y
+        temp1->data = temp2->data-temp1->data; // temp1 data = x+y - x = y
+        temp2->data = temp2->data-temp1->data; // temp2 data = x+y - y = x
     }
-}else{
-if(str.day <29){// general condition
-    str.day ++;
-}else{// condition for last day of month
-str.day ++;
-str.month++;
+    temp2 = temp2->next; // then onto next temp2
+  }
+  temp1 = temp1->next; // onto next temp1
 }
 }
-if(str.month == 1 && str.day  > 28){ // in the above conditions Feb. was not paid any attention, so for that here is the safety Net
-    str.month = 2; str.day  = 1; // only possible scenario
-}
-months(str.month); // printing answer month first
-printf("%d \n", str.day ); // date second
-
-}
-
-void input(int new_day , int new_month, struct date str){ // this function takes in the date and the data structure
-str.day = new_day;
-str.month = new_month-1; // I am taking DD/MM  type date starting with 0 so, month is new_month -1
-next_date(str); // it triggers the function above for next date
-printf("\n");
-}
-
 
 int main(){
-// February 28, March 14, October 31, and  December 31.
-printf("Test Cases \n\n");
+    node* head = NULL; // creating head node
+    for(int i = 0 ; i< 100 ; i++)
+    adder(&head,rand()%1001); // generating the linked list using Random function
 
-struct date d1;// one struct date is enough, it's re-used
-input(28,2,d1); // It triggers the initial function
-input(14,3,d1);
-input(31,10,d1);
-input(31,12,d1);
-
+    printer(head); // printing initial list
+        printf("\n Line Change \n"); // marker that initial list is over
+    sorter(head); // sorting the list
+    printf("After Sorting \n"); // marker that sorting is over
+    printer(head); // printing new list
     return 0;
 }
